@@ -44,7 +44,7 @@ public class RobotContainer {
                drivetain.drive(
                     driverController.getLeftY(),
                     driverController.getLeftX(),
-                    driverController.getRightX(),
+                    drivetain.PIDcontrolRot(driverController.getRightX(), driverController.getRightY()),
                     false),
            drivetain));
     

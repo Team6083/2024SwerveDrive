@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -30,6 +31,8 @@ public class Drivetain extends SubsystemBase {
   private final SwerveDriveOdometry odometry;
 
   private final AnalogGyro gyro = new AnalogGyro(0);
+
+  private final PIDController rotController = new PIDController(0.5, 0, 0);
 
   public Drivetain() {
     frontLeftLocation = new Translation2d(0.381, 0.381);
@@ -91,6 +94,12 @@ public class Drivetain extends SubsystemBase {
             backLeft.getPosition(),
             backRight.getPosition()
         });
+  }
+
+  public double PIDcontrolRot(double rightX, double rightY){
+      double angle = Math.atan2(rightY, rightX);
+      double rotSpd = rotController.calculate(gyro.getRotation2d().getRadians(), angle);
+      return rotSpd;
   }
 
   @Override
