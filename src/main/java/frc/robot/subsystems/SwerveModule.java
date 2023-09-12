@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -55,6 +56,7 @@ public class SwerveModule extends SubsystemBase {
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
     turningEncoder = new CANCoder(turningEncoderChannelA);
+    turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     driveEncoder = driveMotor.getEncoder();
 
@@ -63,16 +65,26 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        driveEncoder.getVelocity() / 60.0, new Rotation2d(turningEncoder.getPosition()));
+        driveEncoder.getVelocity() / 60.0, new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
   }
 
-  public double getDriveDistance(){
-  return driveEncoder.getPosition()/6.75*2 * Math.PI * ModuleConstants.kWheelRadius;
+  public double getDriveDistance() {
+    return driveEncoder.getPosition() / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
   }
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-       getDriveDistance(), new Rotation2d(turningEncoder.getPosition()));
+        getDriveDistance(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
+  }
+
+  // for one module test
+  public double getRotation() {
+    return turningEncoder.getAbsolutePosition();
+  }
+
+  public void setMotorPower(double driveSpd, double rotSpd) {
+    driveMotor.set(0.6*driveSpd);
+    driveMotor.set(rotSpd);
   }
 
   @Override
