@@ -26,7 +26,7 @@ public class SwerveTest2ManualCmd extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    oneModuleSub.drive(main.getRightX(), main.getRightY(), main.getLeftY());
+    oneModuleSub.drive(0.2*main.getRightX(), main.getRightY(), 0.3*main.getLeftY());
   }
 
   // Called once the command ends or is interrupted.

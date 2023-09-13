@@ -15,11 +15,11 @@ public class OneModuleSub extends SubsystemBase {
   private final PIDController rotController = new PIDController(0.05, 0, 0);
 
   public OneModuleSub() {
-    motor = new SwerveModule(1, 2, 0);
+    motor = new SwerveModule(2, 1, 0);
   }
 
   public void drive(double rightX, double rightY, double speed) {
-    motor.setMotorPower(speed, PIDcontrolRot(rightX, rightY));
+    motor.setMotorPower(speed, rightX);
   }
 
   public double PIDcontrolRot(double rightX, double rightY) {
