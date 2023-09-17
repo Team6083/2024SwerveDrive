@@ -9,7 +9,6 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.SwerveTest2ManualCmd;
 import frc.robot.subsystems.Drivetain;
 import frc.robot.subsystems.OneModuleSub;
-import frc.robot.subsystems.SwerveModule;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,10 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
   // The robot's subsystems and commands are defined here...
-  SwerveModule swervemodule;
   Drivetain drivetain;
   OneModuleSub oneModuleSub;
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController = new CommandXboxController(
       OperatorConstants.kDriverControllerPort);
@@ -36,7 +36,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    // swervemodule = new SwerveModule(0, 0, 0);
+
     // drivetain = new Drivetain();
     oneModuleSub = new OneModuleSub();
     configureBindings();
