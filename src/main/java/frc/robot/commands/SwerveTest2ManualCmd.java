@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.OneModuleSub;
@@ -26,7 +27,12 @@ public class SwerveTest2ManualCmd extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    oneModuleSub.drive(0.2*main.getRightX(), main.getRightY(), 0.3*main.getLeftY());
+    oneModuleSub.drive(0.2*main.getRightX(), main.getRightY(), main.getLeftY());
+    double angle = Math.atan2(main.getRightY(), main.getRightX());
+    if(angle>Math.PI/2.0){
+      angle = angle - 2.0*Math.PI;
+    }
+    SmartDashboard.putNumber("controller_turningAngle", Math.toDegrees(angle)+90);
   }
 
   // Called once the command ends or is interrupted.

@@ -84,7 +84,7 @@ public class SwerveModule extends SubsystemBase {
 
   public void setMotorPower(double driveSpd, double rotSpd) {
     driveMotor.set(0.6*driveSpd);
-    driveMotor.set(rotSpd);
+    turningMotor.set(rotSpd);
   }
 
   @Override

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class OneModuleSub extends SubsystemBase {
@@ -12,30 +13,33 @@ public class OneModuleSub extends SubsystemBase {
 
   private final SwerveModule motor;
 
-  private final PIDController rotController = new PIDController(0.05, 0, 0);
+  private final PIDController rotController = new PIDController(0.005, 0, 0);
 
   public OneModuleSub() {
-    motor = new SwerveModule(2, 1, 0);
+    rotController.enableContinuousInput(-180, 180);
+    motor = new SwerveModule(1, 2, 0);
   }
 
   public void drive(double rightX, double rightY, double speed) {
-    motor.setMotorPower(speed, rightX);
+    motor.setMotorPower(speed, 0.4 * PIDcontrolRot(rightX, rightY));
   }
 
   public double PIDcontrolRot(double rightX, double rightY) {
-    double angle = Math.atan2(rightY, rightX);
-    if(angle<=Math.PI*3.0/2.0){
-      angle -= Math.PI/2.0;
+    if (Math.abs(rightX) > 0.1 || Math.abs(rightY) > 0.1) {
+      double angle = Math.atan2(rightY, rightX);
+      if (angle > Math.PI / 2.0) {
+        angle = angle - 2.0 * Math.PI;
+      }
+      rotController.setSetpoint(Math.toDegrees(angle) + 90);
+      double rotSpd = rotController.calculate(motor.getRotation());
+      return -rotSpd;
     }
-    if(angle>Math.PI*3.0/2.0){
-      angle = angle-5.0*Math.PI/2.0;
-    }
-    double rotSpd = rotController.calculate(motor.getRotation(), Math.toDegrees(angle));
-    return rotSpd;
+    return 0;
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("angle", motor.getRotation());
   }
 }
