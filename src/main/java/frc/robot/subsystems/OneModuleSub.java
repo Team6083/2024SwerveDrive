@@ -26,11 +26,17 @@ public class OneModuleSub extends SubsystemBase {
 
   public double PIDcontrolRot(double rightX, double rightY) {
     if (Math.abs(rightX) > 0.1 || Math.abs(rightY) > 0.1) {
-      double angle = Math.atan2(rightY, rightX);
-      if (angle > Math.PI / 2.0) {
+      double angle = Math.atan2(-rightY, rightX);
+      if (angle > 3.0*Math.PI / 2.0) {
         angle = angle - 2.0 * Math.PI;
       }
-      rotController.setSetpoint(Math.toDegrees(angle) + 90);
+      if(angle > Math.PI){
+        angle = -Math.PI+(angle-Math.PI)%Math.PI;
+      }
+      if(angle<-Math.PI){
+        angle = Math.PI-(-Math.PI-angle)%Math.PI;
+      }
+      rotController.setSetpoint(Math.toDegrees(angle) - 90);
       double rotSpd = rotController.calculate(motor.getRotation());
       return -rotSpd;
     }
