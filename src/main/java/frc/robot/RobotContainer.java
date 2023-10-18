@@ -37,20 +37,10 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
 
-    // drivetain = new Drivetain();
+  
     oneModuleSub = new OneModuleSub();
-    configureBindings();
-    // drivetain.setDefaultCommand(
-    //     // The left stick controls translation of the robot.
-    //     // Turning is controlled by the X axis of the right stick.
-    //     new RunCommand(
-    //         () ->
-    //            drivetain.drive(
-    //                 driverController.getLeftY(),
-    //                 driverController.getLeftX(),
-    //                 drivetain.PIDcontrolRot(driverController.getRightX(), driverController.getRightY()),
-    //                 false),
-    //        drivetain));
+    // configureBindings();
+
     
     oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub, driverController));
 
@@ -73,6 +63,19 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
+        drivetain = new Drivetain();
+
+        drivetain.setDefaultCommand(
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the X axis of the right stick.
+        new RunCommand(
+            () ->
+               drivetain.drive(
+                    driverController.getLeftY(),
+                    driverController.getLeftX(),
+                    drivetain.PIDcontrolRot(driverController.getRightX(), driverController.getRightY()),
+                    false),
+           drivetain));
 
   }
 
