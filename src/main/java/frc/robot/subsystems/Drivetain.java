@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetainConstants;
 
@@ -30,7 +33,7 @@ public class Drivetain extends SubsystemBase {
 
   private final SwerveDriveOdometry odometry;
 
-  private final AnalogGyro gyro = new AnalogGyro(0);
+  private final AHRS gyro;
 
   private final PIDController rotController = new PIDController(0.5, 0, 0);
 
@@ -44,6 +47,8 @@ public class Drivetain extends SubsystemBase {
     frontRight = new SwerveModule(3, 4, 4);
     backLeft = new SwerveModule(5, 6, 8);
     backRight = new SwerveModule(7, 8, 12);
+
+    gyro = new AHRS(Port.kMXP);
 
     kinematics = new SwerveDriveKinematics(
         frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
