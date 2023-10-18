@@ -82,8 +82,9 @@ public class SwerveModule extends SubsystemBase {
     return turningEncoder.getAbsolutePosition();
   }
 
+  // for one module test
   public void setMotorPower(double driveSpd, double rotSpd) {
-    driveMotor.set(0.6*driveSpd);
+    driveMotor.set(0.6 * driveSpd);
     turningMotor.set(rotSpd);
   }
 
@@ -103,7 +104,8 @@ public class SwerveModule extends SubsystemBase {
     final double kdriveFeedforward = driveFeedforward.calculate(state.speedMetersPerSecond);
 
     // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput = turningPIDController.calculate(turningEncoder.getPosition(), state.angle.getRadians());
+    final double turnOutput = turningPIDController.calculate(Math.toRadians(turningEncoder.getAbsolutePosition()),
+        state.angle.getRadians());
 
     final double kturnFeedforward = turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
 
