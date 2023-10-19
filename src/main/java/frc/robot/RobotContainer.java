@@ -37,11 +37,10 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
 
-  
-    oneModuleSub = new OneModuleSub();
+    // drivetain = new Drivetain();
     // configureBindings();
 
-    
+    oneModuleSub = new OneModuleSub();
     oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub, driverController));
 
   }
