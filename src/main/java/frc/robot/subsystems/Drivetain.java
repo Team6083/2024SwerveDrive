@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetainConstants;
@@ -38,10 +37,10 @@ public class Drivetain extends SubsystemBase {
   private final PIDController rotController = new PIDController(0.5, 0, 0);
 
   public Drivetain() {
-    frontLeftLocation = new Translation2d(0.381, 0.381);
-    frontRightLocation = new Translation2d(0.381, -0.381);
-    backLeftLocation = new Translation2d(-0.381, 0.381);
-    backRightLocation = new Translation2d(-0.381, -0.381);
+    frontLeftLocation = new Translation2d(0.3, 0.3);
+    frontRightLocation = new Translation2d(0.3, -0.3);
+    backLeftLocation = new Translation2d(-0.3, 0.3);
+    backRightLocation = new Translation2d(-0.3, -0.3);
 
     frontLeft = new SwerveModule(1, 2, 0);
     frontRight = new SwerveModule(3, 4, 4);
