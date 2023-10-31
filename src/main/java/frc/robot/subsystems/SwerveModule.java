@@ -35,10 +35,12 @@ public class SwerveModule extends SubsystemBase {
 
   private final double kModuleMaxAngularVelocity;
 
+  //feedforward sensor-now no use
   private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 1);;
   private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 1);
 
   // Using a TrapezoidProfile PIDController to allow for smooth turning
+  // the constants need to test
   private final ProfiledPIDController turningPIDController = new ProfiledPIDController(
       ModuleConstants.kPModuleTurningController,
       0,
@@ -50,7 +52,8 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
       int turningEncoderChannelA) {
-
+    
+    // set the max speed
     kModuleMaxAngularVelocity = DrivetainConstants.kMaxAngularSpeed;
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -63,29 +66,21 @@ public class SwerveModule extends SubsystemBase {
     turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
+  // to get the single swerveModule speed and the turning rate
   public SwerveModuleState getState() {
     return new SwerveModuleState(
         getDriveRate(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
   }
 
+  // to get the drive distance
   public double getDriveDistance() {
     return driveEncoder.getPosition() / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
   }
 
+  // to the get the postion by wpi function
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
         getDriveDistance(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
-  }
-
-  // for one module test
-  public double getRotation() {
-    return turningEncoder.getAbsolutePosition();
-  }
-
-  // for one module test
-  public void setMotorPower(double driveSpd, double rotSpd) {
-    driveMotor.set(0.6 * driveSpd);
-    turningMotor.set(rotSpd);
   }
 
   public void setDriveMotorReverse(){
@@ -96,14 +91,9 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.setInverted(true);
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
-
   public void setDesiredState(SwerveModuleState desiredState, double minus) {
     // Optimize the reference state to avoid spinning further than 90 degrees
-    SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d());
+    SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
 
     // Calculate the drive output from the drive PID controller.
     final double driveOutput = drivePIDController.calculate(getDriveRate(),
@@ -121,7 +111,26 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.setVoltage(minus*turnOutput);
   }
 
+  // calculate the rate of the drive
   public double getDriveRate(){
     return driveEncoder.getVelocity() / 60.0 / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
   }
+
+  // for one module test
+  public double getRotation() {
+    return turningEncoder.getAbsolutePosition();
+  }
+
+  // for one module test
+  public void setMotorPower(double driveSpd, double rotSpd) {
+    driveMotor.set(0.6 * driveSpd);
+    turningMotor.set(rotSpd);
+  } 
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
+
+  
 }

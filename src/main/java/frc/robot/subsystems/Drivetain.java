@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -53,6 +52,7 @@ public class Drivetain extends SubsystemBase {
     kinematics = new SwerveDriveKinematics(
         frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
+    // create the odometry
     odometry = new SwerveDriveOdometry(
         kinematics,
         gyro.getRotation2d(),
@@ -62,12 +62,17 @@ public class Drivetain extends SubsystemBase {
             backLeft.getPosition(),
             backRight.getPosition()
         });
-        setGyroReset();
-        backLeft.setDriveMotorReverse();
-        backRight.setDriveMotorReverse();
-        backLeft.setTurningMotorReverse();
-        backRight.setTurningMotorReverse();
-        drive(0, 0, 0, false);
+
+    // reset the gyro
+    setGyroReset();
+    //set reverse of the motor
+    backLeft.setDriveMotorReverse();
+    backRight.setDriveMotorReverse();
+    backLeft.setTurningMotorReverse();
+    backRight.setTurningMotorReverse();
+    
+    //set the swerve speed equal 0
+    drive(0, 0, 0, false);
   }
 
   public void setGyroReset() {
@@ -82,6 +87,8 @@ public class Drivetain extends SubsystemBase {
    * @param rot           Angular rate of the robot.
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
+   * 
+   * using the wpi function to set the speed of the swerve
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     var swerveModuleStates = kinematics.toSwerveModuleStates(
@@ -98,19 +105,20 @@ public class Drivetain extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     odometry.update(
-      gyro.getRotation2d(),
-      new SwerveModulePosition[] {
-          frontLeft.getPosition(),
-          frontRight.getPosition(),
-          backLeft.getPosition(),
-          backRight.getPosition()
-      });
+        gyro.getRotation2d(),
+        new SwerveModulePosition[] {
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()
+        });
   }
 
-  public double PIDcontrolRot(double rightX, double rightY){
-      double angle = Math.atan2(rightY, rightX);
-      double rotSpd = rotController.calculate(gyro.getRotation2d().getRadians(), angle);
-      return rotSpd;
+  //by test the different xboxController mode
+  public double PIDcontrolRot(double rightX, double rightY) {
+    double angle = Math.atan2(rightY, rightX);
+    double rotSpd = rotController.calculate(gyro.getRotation2d().getRadians(), angle);
+    return rotSpd;
   }
 
   @Override
