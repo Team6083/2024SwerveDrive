@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -61,7 +62,7 @@ public class Drivetain extends SubsystemBase {
             backLeft.getPosition(),
             backRight.getPosition()
         });
-        DrivetrainGyro();
+        setGyroReset();
         backLeft.setDriveMotorReverse();
         backRight.setDriveMotorReverse();
         backLeft.setTurningMotorReverse();
@@ -69,7 +70,7 @@ public class Drivetain extends SubsystemBase {
         drive(0, 0, 0, false);
   }
 
-  public void DrivetrainGyro() {
+  public void setGyroReset() {
     gyro.reset();
   }
 
@@ -97,13 +98,13 @@ public class Drivetain extends SubsystemBase {
   /** Updates the field relative position of the robot. */
   public void updateOdometry() {
     odometry.update(
-        gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-            frontLeft.getPosition(),
-            frontRight.getPosition(),
-            backLeft.getPosition(),
-            backRight.getPosition()
-        });
+      gyro.getRotation2d(),
+      new SwerveModulePosition[] {
+          frontLeft.getPosition(),
+          frontRight.getPosition(),
+          backLeft.getPosition(),
+          backRight.getPosition()
+      });
   }
 
   public double PIDcontrolRot(double rightX, double rightY){

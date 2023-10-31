@@ -30,7 +30,7 @@ public final class Constants {
     public static final double kWheelRadius = 0.046;
 
     public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2.5 * Math.PI;
-    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2 * Math.PI;
+    public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2.5 * Math.PI;
 
     // public static final int kEncoderCPR = 1024;
     public static final double kWheelDiameterMeters = 0.15;
