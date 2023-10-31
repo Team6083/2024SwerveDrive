@@ -65,7 +65,7 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModuleState getState() {
     return new SwerveModuleState(
-        driveEncoder.getVelocity() / 60.0, new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
+        getDriveRate(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
   }
 
   public double getDriveDistance() {
@@ -88,28 +88,40 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.set(rotSpd);
   }
 
+  public void setDriveMotorReverse(){
+    driveMotor.setInverted(true);
+  }
+
+  public void setTurningMotorReverse(){
+    turningMotor.setInverted(true);
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 
-  public void setDesiredState(SwerveModuleState desiredState) {
+  public void setDesiredState(SwerveModuleState desiredState, double minus) {
     // Optimize the reference state to avoid spinning further than 90 degrees
     SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d());
 
     // Calculate the drive output from the drive PID controller.
-    final double driveOutput = drivePIDController.calculate(driveEncoder.getVelocity() / 60.0,
+    final double driveOutput = drivePIDController.calculate(getDriveRate(),
         state.speedMetersPerSecond);
 
     final double kdriveFeedforward = driveFeedforward.calculate(state.speedMetersPerSecond);
 
     // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput = turningPIDController.calculate(Math.toRadians(turningEncoder.getAbsolutePosition()),
+    final double turnOutput = -turningPIDController.calculate(Math.toRadians(turningEncoder.getAbsolutePosition()),
         state.angle.getRadians());
 
     final double kturnFeedforward = turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
 
-    driveMotor.setVoltage(driveOutput + kdriveFeedforward);
-    turningMotor.setVoltage(turnOutput + kturnFeedforward);
+    driveMotor.setVoltage(driveOutput);
+    turningMotor.setVoltage(minus*turnOutput);
+  }
+
+  public double getDriveRate(){
+    return driveEncoder.getVelocity() / 60.0 / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
   }
 }

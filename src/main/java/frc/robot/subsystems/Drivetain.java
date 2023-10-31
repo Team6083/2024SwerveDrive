@@ -42,10 +42,10 @@ public class Drivetain extends SubsystemBase {
     backLeftLocation = new Translation2d(-0.3, 0.3);
     backRightLocation = new Translation2d(-0.3, -0.3);
 
-    frontLeft = new SwerveModule(1, 2, 0);
-    frontRight = new SwerveModule(3, 4, 4);
-    backLeft = new SwerveModule(5, 6, 8);
-    backRight = new SwerveModule(7, 8, 12);
+    frontLeft = new SwerveModule(10, 11, 5);
+    frontRight = new SwerveModule(15, 14, 4);
+    backLeft = new SwerveModule(12, 13, 2);
+    backRight = new SwerveModule(17, 16, 3);
 
     gyro = new AHRS(Port.kMXP);
 
@@ -61,6 +61,12 @@ public class Drivetain extends SubsystemBase {
             backLeft.getPosition(),
             backRight.getPosition()
         });
+        DrivetrainGyro();
+        backLeft.setDriveMotorReverse();
+        backRight.setDriveMotorReverse();
+        backLeft.setTurningMotorReverse();
+        backRight.setTurningMotorReverse();
+        drive(0, 0, 0, false);
   }
 
   public void DrivetrainGyro() {
@@ -82,10 +88,10 @@ public class Drivetain extends SubsystemBase {
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DrivetainConstants.kMaxSpeed);
-    frontLeft.setDesiredState(swerveModuleStates[0]);
-    frontRight.setDesiredState(swerveModuleStates[1]);
-    backLeft.setDesiredState(swerveModuleStates[2]);
-    backRight.setDesiredState(swerveModuleStates[3]);
+    frontLeft.setDesiredState(swerveModuleStates[0], 1);
+    frontRight.setDesiredState(swerveModuleStates[1], 1);
+    backLeft.setDesiredState(swerveModuleStates[2], -1);
+    backRight.setDesiredState(swerveModuleStates[3], -1);
   }
 
   /** Updates the field relative position of the robot. */

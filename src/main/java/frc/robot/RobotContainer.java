@@ -9,6 +9,7 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.SwerveTest2ManualCmd;
 import frc.robot.subsystems.Drivetain;
 import frc.robot.subsystems.OneModuleSub;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -37,11 +38,12 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
 
-    // drivetain = new Drivetain();
-    // configureBindings();
+    configureBindings();
+    SmartDashboard.putNumber("xbox_leftX", driverController.getLeftX());
+    SmartDashboard.putNumber("xbox_leftY", driverController.getLeftY());
 
-    oneModuleSub = new OneModuleSub();
-    oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub, driverController));
+    // oneModuleSub = new OneModuleSub();
+    // oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub, driverController));
 
   }
 

@@ -22,14 +22,14 @@ public final class Constants {
   }
 
   public final class DrivetainConstants {
-    public static final double kMaxSpeed = 3.0; // 3 meters per second
+    public static final double kMaxSpeed = 4; // 3 meters per second
     public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
   }
 
   public static final class ModuleConstants {
     public static final double kWheelRadius = 0.046;
 
-    public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2 * Math.PI;
+    public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2.5 * Math.PI;
     public static final double kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2 * Math.PI;
 
     // public static final int kEncoderCPR = 1024;
@@ -42,9 +42,9 @@ public final class Constants {
     //     // Assumes the encoders are on a 1:1 reduction with the module shaft.
     //     (2 * Math.PI) / (double) kEncoderCPR;
 
-    public static final double kPModuleTurningController = 1;
+    public static final double kPModuleTurningController = 3;
 
-    public static final double kPModuleDriveController = 1;
+    public static final double kPModuleDriveController = 5;
   }
 
 }
