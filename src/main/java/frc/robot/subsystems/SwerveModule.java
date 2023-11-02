@@ -52,7 +52,6 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
       int turningEncoderChannelA) {
-    
     // set the max speed
     kModuleMaxAngularVelocity = DrivetainConstants.kMaxAngularSpeed;
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
@@ -102,8 +101,8 @@ public class SwerveModule extends SubsystemBase {
     final double kdriveFeedforward = driveFeedforward.calculate(state.speedMetersPerSecond);
 
     // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput = -turningPIDController.calculate(Math.toRadians(turningEncoder.getAbsolutePosition()),
-        state.angle.getRadians());
+    final double turnOutput = -turningPIDController.calculate(turningEncoder.getAbsolutePosition(),
+        state.angle.getDegrees());
 
     final double kturnFeedforward = turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
 
