@@ -34,8 +34,6 @@ public class SwerveModule extends SubsystemBase {
   // private final PIDController drivePIDController = new
   // PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
-  private final double kModuleMaxAngularVelocity;
-
   // feedforward sensor-now no use
   // private final SimpleMotorFeedforward driveFeedforward = new
   // SimpleMotorFeedforward(1, 1);;
@@ -57,8 +55,6 @@ public class SwerveModule extends SubsystemBase {
       int turningMotorChannel,
       int turningEncoderChannelA, boolean driveInverted) {
 
-    // set the max speed
-    kModuleMaxAngularVelocity = DrivetainConstants.kMaxAngularSpeed;
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
 
