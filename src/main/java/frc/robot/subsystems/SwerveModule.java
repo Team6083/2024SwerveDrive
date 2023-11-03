@@ -31,28 +31,32 @@ public class SwerveModule extends SubsystemBase {
 
   private final RelativeEncoder driveEncoder;
 
-  private final PIDController drivePIDController = new PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
+  // private final PIDController drivePIDController = new
+  // PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
   private final double kModuleMaxAngularVelocity;
 
-  //feedforward sensor-now no use
-  private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(1, 1);;
-  private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 1);
+  // feedforward sensor-now no use
+  // private final SimpleMotorFeedforward driveFeedforward = new
+  // SimpleMotorFeedforward(1, 1);;
+  // private final SimpleMotorFeedforward turnFeedforward = new
+  // SimpleMotorFeedforward(1, 1);
 
   // Using a TrapezoidProfile PIDController to allow for smooth turning
   // the constants need to test
-  private final ProfiledPIDController turningPIDController = new ProfiledPIDController(
-      ModuleConstants.kPModuleTurningController,
-      0,
-      0,
-      new TrapezoidProfile.Constraints(
-          ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
-          ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
+  // private final ProfiledPIDController turningPIDController = new
+  // ProfiledPIDController(
+  // ModuleConstants.kPModuleTurningController,
+  // 0,
+  // 0,
+  // new TrapezoidProfile.Constraints(
+  // ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
+  // ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
 
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
-      int turningEncoderChannelA) {
-    
+      int turningEncoderChannelA, boolean driveInverted) {
+
     // set the max speed
     kModuleMaxAngularVelocity = DrivetainConstants.kMaxAngularSpeed;
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
@@ -63,7 +67,13 @@ public class SwerveModule extends SubsystemBase {
 
     driveEncoder = driveMotor.getEncoder();
 
-    turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+    driveMotor.setInverted(driveInverted);
+    turningMotor.setInverted(true);
+    driveMotor.setCANTimeout(0);
+    turningMotor.setCANTimeout(0);
+    resetAllEncoder();
+    clearSticklyFault();
+    // turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
   // to get the single swerveModule speed and the turning rate
@@ -83,36 +93,58 @@ public class SwerveModule extends SubsystemBase {
         getDriveDistance(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
   }
 
-  public void setDriveMotorReverse(){
-    driveMotor.setInverted(true);
+  // public void setDriveMotorReverse(){
+  // driveMotor.setInverted(true);
+  // }
+
+  // public void setTurningMotorReverse(){
+  // turningMotor.setInverted(true);
+  // }
+
+  public void resetAllEncoder() {
+    turningEncoder.configFactoryDefault();
+    driveEncoder.setPosition(0);
   }
 
-  public void setTurningMotorReverse(){
-    turningMotor.setInverted(true);
+  public void clearSticklyFault() {
+    driveMotor.clearFaults();
+    turningMotor.clearFaults();
   }
 
-  public void setDesiredState(SwerveModuleState desiredState, double minus) {
-    // Optimize the reference state to avoid spinning further than 90 degrees
-    SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
+  public void stopModule() {
+    driveMotor.setVoltage(0);
+    turningMotor.setVoltage(0);
+  }
 
-    // Calculate the drive output from the drive PID controller.
-    final double driveOutput = drivePIDController.calculate(getDriveRate(),
-        state.speedMetersPerSecond);
+  public double checkTuringVoltageOverLimit(double turingDegree) {
+    double currentDegree = turingDegree;
+    if (currentDegree > ModuleConstants.kMaxSpeedTurningDegree) {
+      currentDegree = ModuleConstants.kMaxSpeedTurningDegree;
+    } else if (currentDegree < -ModuleConstants.kMaxSpeedTurningDegree) {
+      currentDegree = -ModuleConstants.kMaxSpeedTurningDegree;
+    }
+    double correctVoltage = currentDegree * ModuleConstants.kMaxModuleTuringVoltage
+        / ModuleConstants.kMaxSpeedTurningDegree;
+    return correctVoltage;
+  }
 
-    final double kdriveFeedforward = driveFeedforward.calculate(state.speedMetersPerSecond);
-
-    // Calculate the turning motor output from the turning PID controller.
-    final double turnOutput = -turningPIDController.calculate(Math.toRadians(turningEncoder.getAbsolutePosition()),
-        state.angle.getRadians());
-
-    final double kturnFeedforward = turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
-
-    driveMotor.setVoltage(driveOutput);
-    turningMotor.setVoltage(minus*turnOutput);
+  public void setDesiredState(SwerveModuleState desiredState) {
+    if (desiredState.speedMetersPerSecond < DrivetainConstants.kMinSpeed)
+      return;
+    double goalTuringDegree = desiredState.angle.getDegrees();
+    double currentTuringDegree = turningEncoder.getAbsolutePosition();
+    double error = goalTuringDegree - currentTuringDegree;
+    if (error > 180) {
+      error = error - 360;
+    } else if (error < -180) {
+      error = 360 + error;
+    }
+    driveMotor.setVoltage(ModuleConstants.kDesireSpeedtoMotorVoltage * desiredState.speedMetersPerSecond);
+    turningMotor.setVoltage(checkTuringVoltageOverLimit(error));
   }
 
   // calculate the rate of the drive
-  public double getDriveRate(){
+  public double getDriveRate() {
     return driveEncoder.getVelocity() / 60.0 / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
   }
 
@@ -125,12 +157,11 @@ public class SwerveModule extends SubsystemBase {
   public void setMotorPower(double driveSpd, double rotSpd) {
     driveMotor.set(0.6 * driveSpd);
     turningMotor.set(rotSpd);
-  } 
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
 
-  
 }

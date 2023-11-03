@@ -34,7 +34,9 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(
       OperatorConstants.kDriverControllerPort);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Configure the trigger bindings
 
@@ -43,7 +45,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("xbox_leftY", driverController.getLeftY());
 
     // oneModuleSub = new OneModuleSub();
-    // oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub, driverController));
+    // oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub,
+    // driverController));
 
   }
 
@@ -64,19 +67,18 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-        drivetain = new Drivetain();
+    drivetain = new Drivetain();
 
-        drivetain.setDefaultCommand(
+    drivetain.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
-            () ->
-               drivetain.drive(
-                    driverController.getLeftY(),
-                    driverController.getLeftX(),
-                    driverController.getRightX(),
-                    false),
-           drivetain));
+            () -> drivetain.drive(
+                driverController.getLeftY(),
+                driverController.getLeftX(),
+                driverController.getRightX(),
+                driverController.getHID().getAButton()),
+            drivetain));
 
   }
 
