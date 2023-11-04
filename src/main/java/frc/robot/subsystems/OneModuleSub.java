@@ -17,11 +17,11 @@ public class OneModuleSub extends SubsystemBase {
 
   public OneModuleSub() {
     rotController.enableContinuousInput(-180, 180);
-    motor = new SwerveModule(1, 2, 0, true);
+    motor = new SwerveModule(10, 11, 5, true, "test");
   }
 
   public void drive(double rightX, double rightY, double speed) {
-    motor.setMotorPower(speed, 0.4 * PIDcontrolRot(rightX, rightY));
+    motor.setMotorPower(speed,rightX);
   }
 
   public double PIDcontrolRot(double rightX, double rightY) {

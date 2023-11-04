@@ -22,8 +22,8 @@ public final class Constants {
   }
 
   public final class DrivetainConstants {
-    public static final double kMaxSpeed = 5; // 5 meters per second
-    public static final double kMinSpeed = 0.005;
+    public static final double kMaxSpeed = 7; // 7 meters per second
+    public static final double kMinSpeed = 0.5;
     public static final double kMaxAngularSpeed = 2.5 * Math.PI; // 1/2 rotation per second
 
     public static final boolean kFrontLeftDriveMotorInverted = true;
@@ -54,7 +54,9 @@ public final class Constants {
 
     // public static final double kPModuleDriveController = 6;
 
-    public static final double kDesireSpeedtoMotorVoltage = 12 / DrivetainConstants.kMaxSpeed;
+    public static final double kMaxModuleDriveVoltage = 12.0;
+
+    public static final double kDesireSpeedtoMotorVoltage = kMaxModuleDriveVoltage / DrivetainConstants.kMaxSpeed;
 
     public static final double kMaxModuleTuringVoltage = 11.0;
 

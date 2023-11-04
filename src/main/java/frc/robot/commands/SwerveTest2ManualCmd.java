@@ -27,7 +27,7 @@ public class SwerveTest2ManualCmd extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    oneModuleSub.drive(0.2*main.getRightX(), main.getRightY(), main.getLeftY());
+    oneModuleSub.drive(0.5*main.getRightX(), main.getRightY(), main.getLeftY());
     double angle = Math.atan2(main.getRightY(), main.getRightX());
     if(angle>3.0*Math.PI/2.0){
       angle = angle - 2.0*Math.PI;

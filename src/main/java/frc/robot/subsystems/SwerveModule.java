@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetainConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -30,6 +31,8 @@ public class SwerveModule extends SubsystemBase {
   private final CANCoder turningEncoder;
 
   private final RelativeEncoder driveEncoder;
+
+  private String name;
 
   // private final PIDController drivePIDController = new
   // PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
@@ -53,7 +56,9 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
-      int turningEncoderChannelA, boolean driveInverted) {
+      int turningEncoderChannelA, boolean driveInverted, String name) {
+
+    name = this.name;
 
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -69,6 +74,7 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.setCANTimeout(0);
     resetAllEncoder();
     clearSticklyFault();
+    stopModule();
     // turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
   }
 
@@ -98,7 +104,6 @@ public class SwerveModule extends SubsystemBase {
   // }
 
   public void resetAllEncoder() {
-    turningEncoder.configFactoryDefault();
     driveEncoder.setPosition(0);
   }
 
@@ -125,8 +130,9 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
-    if (desiredState.speedMetersPerSecond < DrivetainConstants.kMinSpeed)
-      return;
+    if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed){
+      stopModule();
+    }
     double goalTuringDegree = desiredState.angle.getDegrees();
     double currentTuringDegree = turningEncoder.getAbsolutePosition();
     double error = goalTuringDegree - currentTuringDegree;
