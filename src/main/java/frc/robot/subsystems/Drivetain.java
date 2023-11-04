@@ -67,7 +67,6 @@ public class Drivetain extends SubsystemBase {
 
     // reset the gyro
     setGyroReset();
-    // set reverse of the motor
 
     // set the swerve speed equal 0
     drive(0, 0, 0, false);

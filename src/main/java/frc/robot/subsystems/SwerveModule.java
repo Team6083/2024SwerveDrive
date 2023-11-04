@@ -67,11 +67,10 @@ public class SwerveModule extends SubsystemBase {
     turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     driveEncoder = driveMotor.getEncoder();
-
-    driveMotor.setInverted(driveInverted);
-    turningMotor.setInverted(true);
     driveMotor.setCANTimeout(0);
     turningMotor.setCANTimeout(0);
+    driveMotor.setInverted(driveInverted);
+    turningMotor.setInverted(true);
     resetAllEncoder();
     clearSticklyFault();
     stopModule();
@@ -113,8 +112,8 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void stopModule() {
-    driveMotor.setVoltage(0);
-    turningMotor.setVoltage(0);
+    driveMotor.set(0);
+    turningMotor.set(0);
   }
 
   public double checkTuringVoltageOverLimit(double turingDegree) {
@@ -132,17 +131,21 @@ public class SwerveModule extends SubsystemBase {
   public void setDesiredState(SwerveModuleState desiredState) {
     if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed){
       stopModule();
+    }else{
+      double goalTuringDegree = desiredState.angle.getDegrees();
+      double currentTuringDegree = turningEncoder.getAbsolutePosition();
+      double error = goalTuringDegree - currentTuringDegree;
+      if (error > 180) {
+        error = error - 360;
+      } else if (error < -180) {
+        error = 360 + error;
+      }
+        driveMotor.setVoltage(ModuleConstants.kDesireSpeedtoMotorVoltage * desiredState.speedMetersPerSecond);
+        turningMotor.setVoltage(checkTuringVoltageOverLimit(error));
+    
+    
     }
-    double goalTuringDegree = desiredState.angle.getDegrees();
-    double currentTuringDegree = turningEncoder.getAbsolutePosition();
-    double error = goalTuringDegree - currentTuringDegree;
-    if (error > 180) {
-      error = error - 360;
-    } else if (error < -180) {
-      error = 360 + error;
-    }
-    driveMotor.setVoltage(ModuleConstants.kDesireSpeedtoMotorVoltage * desiredState.speedMetersPerSecond);
-    turningMotor.setVoltage(checkTuringVoltageOverLimit(error));
+    
   }
 
   // calculate the rate of the drive
