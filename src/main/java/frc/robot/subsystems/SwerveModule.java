@@ -137,7 +137,7 @@ public class SwerveModule extends SubsystemBase {
       double error = goalTuringDegree - currentTuringDegree;
       if (error > 180) {
         error = error - 360;
-      } else if (error < -180) {
+      } else{
         error = 360 + error;
       }
         driveMotor.setVoltage(ModuleConstants.kDesireSpeedtoMotorVoltage * desiredState.speedMetersPerSecond);
