@@ -43,10 +43,10 @@ public class Drivetain extends SubsystemBase {
     backLeftLocation = new Translation2d(-0.3, 0.3);
     backRightLocation = new Translation2d(-0.3, -0.3);
 
-    frontLeft = new SwerveModule(10, 11, 5, DrivetainConstants.kFrontLeftDriveMotorInverted, "frontLeft");
-    frontRight = new SwerveModule(15, 14, 4, DrivetainConstants.kFrontRightDriveMotorInverted, "frontRight");
-    backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted, "backLeft");
-    backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted, "backRight");
+    frontLeft = new SwerveModule(10, 11, 5, DrivetainConstants.kFrontLeftDriveMotorInverted);
+    frontRight = new SwerveModule(15, 14, 4, DrivetainConstants.kFrontRightDriveMotorInverted);
+    backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted);
+    backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted);
 
     gyro = new AHRS(Port.kMXP);
 
@@ -89,8 +89,8 @@ public class Drivetain extends SubsystemBase {
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     var swerveModuleStates = kinematics.toSwerveModuleStates(
         fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(5.0*xSpeed, 5.0*ySpeed, 5.0*rot, gyro.getRotation2d())
-            : new ChassisSpeeds(5.0*xSpeed, 5.0*ySpeed, 5.0*rot));
+            ? ChassisSpeeds.fromFieldRelativeSpeeds(5.0 * xSpeed, 5.0 * ySpeed, 5.0 * rot, gyro.getRotation2d())
+            : new ChassisSpeeds(5.0 * xSpeed, 5.0 * ySpeed, 5.0 * rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DrivetainConstants.kMaxSpeed);
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);

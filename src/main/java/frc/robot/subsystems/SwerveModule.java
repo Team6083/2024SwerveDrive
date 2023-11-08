@@ -32,8 +32,6 @@ public class SwerveModule extends SubsystemBase {
 
   private final RelativeEncoder driveEncoder;
 
-  private String name;
-
   // private final PIDController drivePIDController = new
   // PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
 
@@ -56,9 +54,8 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
-      int turningEncoderChannelA, boolean driveInverted, String name) {
+      int turningEncoderChannelA, boolean driveInverted) {
 
-    name = this.name;
 
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
