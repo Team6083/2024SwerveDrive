@@ -32,26 +32,6 @@ public class SwerveModule extends SubsystemBase {
 
   private final RelativeEncoder driveEncoder;
 
-  // private final PIDController drivePIDController = new
-  // PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
-
-  // feedforward sensor-now no use
-  // private final SimpleMotorFeedforward driveFeedforward = new
-  // SimpleMotorFeedforward(1, 1);;
-  // private final SimpleMotorFeedforward turnFeedforward = new
-  // SimpleMotorFeedforward(1, 1);
-
-  // Using a TrapezoidProfile PIDController to allow for smooth turning
-  // the constants need to test
-  // private final ProfiledPIDController turningPIDController = new
-  // ProfiledPIDController(
-  // ModuleConstants.kPModuleTurningController,
-  // 0,
-  // 0,
-  // new TrapezoidProfile.Constraints(
-  // ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
-  // ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
-
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
       int turningEncoderChannelA, boolean driveInverted) {
@@ -64,14 +44,27 @@ public class SwerveModule extends SubsystemBase {
     turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     driveEncoder = driveMotor.getEncoder();
-    driveMotor.setCANTimeout(0);
-    turningMotor.setCANTimeout(0);
+
     driveMotor.setInverted(driveInverted);
     turningMotor.setInverted(true);
+
     resetAllEncoder();
     clearSticklyFault();
     stopModule();
-    // turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+  }
+
+  public void resetAllEncoder() {
+    driveEncoder.setPosition(0);
+  }
+
+  public void clearSticklyFault() {
+    driveMotor.clearFaults();
+    turningMotor.clearFaults();
+  }
+
+  public void stopModule() {
+    driveMotor.set(0);
+    turningMotor.set(0);
   }
 
   // to get the single swerveModule speed and the turning rate
@@ -91,52 +84,19 @@ public class SwerveModule extends SubsystemBase {
         getDriveDistance(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
   }
 
-  // public void setDriveMotorReverse(){
-  // driveMotor.setInverted(true);
-  // }
-
-  // public void setTurningMotorReverse(){
-  // turningMotor.setInverted(true);
-  // }
-
-  public void resetAllEncoder() {
-    driveEncoder.setPosition(0);
-  }
-
-  public void clearSticklyFault() {
-    driveMotor.clearFaults();
-    turningMotor.clearFaults();
-  }
-
-  public void stopModule() {
-    driveMotor.set(0);
-    turningMotor.set(0);
-  }
-
-  public double checkTuringVoltageOverLimit(double turingDegree) {
-    double currentDegree = turingDegree;
-    if (currentDegree > ModuleConstants.kMaxSpeedTurningDegree) {
-      currentDegree = ModuleConstants.kMaxSpeedTurningDegree;
-    } else if (currentDegree < -ModuleConstants.kMaxSpeedTurningDegree) {
-      currentDegree = -ModuleConstants.kMaxSpeedTurningDegree;
-    }
-    double correctVoltage = currentDegree * ModuleConstants.kMaxModuleTuringVoltage
-        / ModuleConstants.kMaxSpeedTurningDegree;
-    return correctVoltage;
+  public double[] optimizeOutputVoltage(SwerveModuleState goalState, double currentTurningDegree) {
+    goalState = SwerveModuleState.optimize(goalState, Rotation2d.fromDegrees(currentTurningDegree));
+    double driveMotorVoltage = ModuleConstants.kDesireSpeedtoMotorVoltage * goalState.speedMetersPerSecond;
+    double turningMotorVoltage = rotController.calculate(currentTurningDegree, goalState.angle.getDegrees());
+    double[] moduleState = { driveMotorVoltage, turningMotorVoltage };
+    return moduleState;
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
     if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed){
       stopModule();
     }else{
-      double goalTuringDegree = desiredState.angle.getDegrees();
-      double currentTuringDegree = turningEncoder.getAbsolutePosition();
-      double error = goalTuringDegree - currentTuringDegree;
-      if (error > 180) {
-        error = error - 360;
-      } else{
-        error = 360 + error;
-      }
+        
         driveMotor.setVoltage(ModuleConstants.kDesireSpeedtoMotorVoltage * desiredState.speedMetersPerSecond);
         turningMotor.setVoltage(checkTuringVoltageOverLimit(error));
     
