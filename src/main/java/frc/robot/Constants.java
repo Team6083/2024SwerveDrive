@@ -35,24 +35,7 @@ public final class Constants {
   public static final class ModuleConstants {
     public static final double kWheelRadius = 0.046;
 
-    // public static final double kMaxModuleAngularSpeedRadiansPerSecond = 2.5 *
-    // Math.PI;
-    // public static final double
-    // kMaxModuleAngularAccelerationRadiansPerSecondSquared = 2.5 * Math.PI;
-
-    // public static final int kEncoderCPR = 1024;
     public static final double kWheelDiameterMeters = 0.15;
-    // public static final double kDriveEncoderDistancePerPulse =
-    // // Assumes the encoders are directly mounted on the wheel shafts
-    // (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR;
-
-    // public static final double kTurningEncoderDistancePerPulse =
-    // // Assumes the encoders are on a 1:1 reduction with the module shaft.
-    // (2 * Math.PI) / (double) kEncoderCPR;
-
-    // public static final double kPModuleTurningController = 5;
-
-    // public static final double kPModuleDriveController = 6;
 
     public static final double kMaxModuleDriveVoltage = 12.0;
 
@@ -61,6 +44,8 @@ public final class Constants {
     public static final double kMaxModuleTuringVoltage = 11.0;
 
     public static final double kMaxSpeedTurningDegree = 180.0;
+
+    public static final double kPRotController =  kMaxModuleTuringVoltage/kMaxSpeedTurningDegree;
   }
 
 }

@@ -78,9 +78,9 @@ public class RobotContainer {
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
             () -> drivetain.drive(
-                driverController.getLeftY(),
-                driverController.getLeftX(),
-                driverController.getRightX(),
+                5.0*driverController.getLeftY(),
+                5.0*driverController.getLeftX(),
+                5.0*driverController.getRightX(),
                 !driverController.getHID().getAButton()),
             drivetain));
 

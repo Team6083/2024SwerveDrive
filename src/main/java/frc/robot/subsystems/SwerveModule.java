@@ -11,13 +11,9 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetainConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -32,30 +28,11 @@ public class SwerveModule extends SubsystemBase {
 
   private final RelativeEncoder driveEncoder;
 
-  // private final PIDController drivePIDController = new
-  // PIDController(ModuleConstants.kPModuleDriveController, 0, 0);
-
-  // feedforward sensor-now no use
-  // private final SimpleMotorFeedforward driveFeedforward = new
-  // SimpleMotorFeedforward(1, 1);;
-  // private final SimpleMotorFeedforward turnFeedforward = new
-  // SimpleMotorFeedforward(1, 1);
-
-  // Using a TrapezoidProfile PIDController to allow for smooth turning
-  // the constants need to test
-  // private final ProfiledPIDController turningPIDController = new
-  // ProfiledPIDController(
-  // ModuleConstants.kPModuleTurningController,
-  // 0,
-  // 0,
-  // new TrapezoidProfile.Constraints(
-  // ModuleConstants.kMaxModuleAngularSpeedRadiansPerSecond,
-  // ModuleConstants.kMaxModuleAngularAccelerationRadiansPerSecondSquared));
+  private final PIDController rotController;
 
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
       int turningEncoderChannelA, boolean driveInverted) {
-
 
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -64,40 +41,17 @@ public class SwerveModule extends SubsystemBase {
     turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
     driveEncoder = driveMotor.getEncoder();
-    driveMotor.setCANTimeout(0);
-    turningMotor.setCANTimeout(0);
+
     driveMotor.setInverted(driveInverted);
     turningMotor.setInverted(true);
+
+    rotController = new PIDController(driveMotorChannel, 0, 0);
+    rotController.enableContinuousInput(-180.0, 180.0);
+
     resetAllEncoder();
     clearSticklyFault();
     stopModule();
-    // turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
   }
-
-  // to get the single swerveModule speed and the turning rate
-  public SwerveModuleState getState() {
-    return new SwerveModuleState(
-        getDriveRate(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
-  }
-
-  // to get the drive distance
-  public double getDriveDistance() {
-    return driveEncoder.getPosition() / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
-  }
-
-  // to the get the postion by wpi function
-  public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(
-        getDriveDistance(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
-  }
-
-  // public void setDriveMotorReverse(){
-  // driveMotor.setInverted(true);
-  // }
-
-  // public void setTurningMotorReverse(){
-  // turningMotor.setInverted(true);
-  // }
 
   public void resetAllEncoder() {
     driveEncoder.setPosition(0);
@@ -113,36 +67,15 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.set(0);
   }
 
-  public double checkTuringVoltageOverLimit(double turingDegree) {
-    double currentDegree = turingDegree;
-    if (currentDegree > ModuleConstants.kMaxSpeedTurningDegree) {
-      currentDegree = ModuleConstants.kMaxSpeedTurningDegree;
-    } else if (currentDegree < -ModuleConstants.kMaxSpeedTurningDegree) {
-      currentDegree = -ModuleConstants.kMaxSpeedTurningDegree;
-    }
-    double correctVoltage = currentDegree * ModuleConstants.kMaxModuleTuringVoltage
-        / ModuleConstants.kMaxSpeedTurningDegree;
-    return correctVoltage;
+  // to get the single swerveModule speed and the turning rate
+  public SwerveModuleState getState() {
+    return new SwerveModuleState(
+        getDriveRate(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
   }
 
-  public void setDesiredState(SwerveModuleState desiredState) {
-    if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed){
-      stopModule();
-    }else{
-      double goalTuringDegree = desiredState.angle.getDegrees();
-      double currentTuringDegree = turningEncoder.getAbsolutePosition();
-      double error = goalTuringDegree - currentTuringDegree;
-      if (error > 180) {
-        error = error - 360;
-      } else{
-        error = 360 + error;
-      }
-        driveMotor.setVoltage(ModuleConstants.kDesireSpeedtoMotorVoltage * desiredState.speedMetersPerSecond);
-        turningMotor.setVoltage(checkTuringVoltageOverLimit(error));
-    
-    
-    }
-    
+  // to get the drive distance
+  public double getDriveDistance() {
+    return driveEncoder.getPosition() / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
   }
 
   // calculate the rate of the drive
@@ -150,9 +83,33 @@ public class SwerveModule extends SubsystemBase {
     return driveEncoder.getVelocity() / 60.0 / 6.75 * 2 * Math.PI * ModuleConstants.kWheelRadius;
   }
 
-  // for one module test
+  // to get rotation of turning motor
   public double getRotation() {
     return turningEncoder.getAbsolutePosition();
+  }
+
+  // to the get the postion by wpi function
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(
+        getDriveDistance(), new Rotation2d(Math.toRadians(turningEncoder.getAbsolutePosition())));
+  }
+
+  public double[] optimizeOutputVoltage(SwerveModuleState goalState, double currentTurningDegree) {
+    goalState = SwerveModuleState.optimize(goalState, Rotation2d.fromDegrees(currentTurningDegree));
+    double driveMotorVoltage = ModuleConstants.kDesireSpeedtoMotorVoltage * goalState.speedMetersPerSecond;
+    double turningMotorVoltage = rotController.calculate(currentTurningDegree, goalState.angle.getDegrees());
+    double[] moduleState = { driveMotorVoltage, turningMotorVoltage };
+    return moduleState;
+  }
+
+  public void setDesiredState(SwerveModuleState desiredState) {
+    if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed) {
+      stopModule();
+    } else {
+      var moduleState = optimizeOutputVoltage(desiredState, getRotation());
+      driveMotor.setVoltage(moduleState[0]);
+      turningMotor.setVoltage(moduleState[1]);
+    }
   }
 
   // for one module test
