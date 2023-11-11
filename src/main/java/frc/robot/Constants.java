@@ -23,7 +23,7 @@ public final class Constants {
 
   public final class DrivetainConstants {
     public static final double kMaxSpeed = 7; // 7 meters per second
-    public static final double kMinSpeed = 0.2;
+    public static final double kMinSpeed = 0.3;
     public static final double kMaxAngularSpeed = 2.5 * Math.PI; // 1/2 rotation per second
 
     public static final boolean kFrontLeftDriveMotorInverted = true;

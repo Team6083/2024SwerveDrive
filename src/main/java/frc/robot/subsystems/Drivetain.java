@@ -48,6 +48,11 @@ public class Drivetain extends SubsystemBase {
     backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted);
     backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted);
 
+    SmartDashboard.putData("frontLeft", frontLeft);
+    SmartDashboard.putData("frontRight", frontRight);
+    SmartDashboard.putData("backLeft", backLeft);
+    SmartDashboard.putData("backRight", backRight);
+
     gyro = new AHRS(Port.kMXP);
 
     kinematics = new SwerveDriveKinematics(

@@ -43,7 +43,7 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder = driveMotor.getEncoder();
 
     driveMotor.setInverted(driveInverted);
-    turningMotor.setInverted(true);
+    turningMotor.setInverted(false);
 
     rotController = new PIDController(driveMotorChannel, 0, 0);
     rotController.enableContinuousInput(-180.0, 180.0);
