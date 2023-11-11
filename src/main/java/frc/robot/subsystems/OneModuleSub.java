@@ -21,7 +21,7 @@ public class OneModuleSub extends SubsystemBase {
   }
 
   public void drive(double rightX, double rightY, double speed) {
-    motor.setMotorPower(speed,rightX);
+    motor.setMotorVoltage(speed,rightX);
   }
 
   public double PIDcontrolRot(double rightX, double rightY) {

@@ -100,6 +100,7 @@ public class SwerveModule extends SubsystemBase {
     return moduleState;
   }
 
+
   public void setDesiredState(SwerveModuleState desiredState) {
     if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed) {
       stopModule();
@@ -112,7 +113,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   // for one module test
-  public void setMotorPower(double driveSpd, double rotSpd) {
+  public void setMotorVoltage(double driveSpd, double rotSpd) {
     driveMotor.set(0.6 * driveSpd);
     turningMotor.set(rotSpd);
   }
