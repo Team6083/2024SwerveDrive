@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.DrivetainConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.Drivetain;
@@ -34,21 +35,17 @@ public class RobotContainer {
 
   private final PowerDistribution pd = new PowerDistribution();
 
+  private boolean chooseJoy;
+  private double[] chassisSpeeds = new double[3];
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
     // Configure the trigger bindings
-
     configureBindings();
-    SmartDashboard.putNumber("xbox_leftX", driverController.getLeftX());
-    SmartDashboard.putNumber("xbox_leftY", driverController.getLeftY());
-    SmartDashboard.putNumber("pd_voltage", pd.getVoltage());
-
-    // oneModuleSub = new OneModuleSub();
-    // oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub,
-    // driverController));
-
+    putDashboard();
+    getValueFromDashboard();
   }
 
   /**
@@ -69,18 +66,41 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
     drivetain = new Drivetain();
+    if (chooseJoy) {
+      drivetain.setDefaultCommand(
+          // The left stick controls translation of the robot.
+          // Turning is controlled by the X axis of the right stick.
+          new RunCommand(
+              () -> drivetain.drive(
+                  DrivetainConstants.kMaxSpeed * driverController.getLeftY(),
+                  DrivetainConstants.kMaxSpeed * driverController.getLeftX(),
+                  DrivetainConstants.kMaxSpeed * driverController.getRightX(),
+                  !driverController.getHID().getAButton()),
+              drivetain));
+    } else {
+      drivetain.setDefaultCommand(
+          new RunCommand(
+              () -> drivetain.drive(
+                  chassisSpeeds[0], chassisSpeeds[1], chassisSpeeds[2], !driverController.getHID().getAButton()),
+              drivetain));
+    }
+  }
 
-    drivetain.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> drivetain.drive(
-                5.0*driverController.getLeftY(),
-                5.0*driverController.getLeftX(),
-                5.0*driverController.getRightX(),
-                !driverController.getHID().getAButton()),
-            drivetain));
+  private void putDashboard(){
+    SmartDashboard.putNumber("xbox_leftX", driverController.getLeftX());
+    SmartDashboard.putNumber("xbox_leftY", driverController.getLeftY());
+    SmartDashboard.putNumber("pd_voltage", pd.getVoltage());
+    SmartDashboard.putBoolean("chooseJoy", chooseJoy);
+    SmartDashboard.putNumber("xSpeed", chassisSpeeds[0]);
+    SmartDashboard.putNumber("ySpeed", chassisSpeeds[1]);
+    SmartDashboard.putNumber("rotSpeed", chassisSpeeds[2]);
+  }
 
+  private void getValueFromDashboard(){
+    chooseJoy = SmartDashboard.getBoolean("chooseJoy", true);
+    chassisSpeeds[0] = SmartDashboard.getNumber("xSpeed", 0);
+    chassisSpeeds[1] = SmartDashboard.getNumber("ySpeed", 0);
+    chassisSpeeds[2] = SmartDashboard.getNumber("rotSpeed", 0);
   }
 
   /**

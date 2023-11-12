@@ -47,7 +47,6 @@ public class SwerveModule extends SubsystemBase {
 
     rotController = new PIDController(driveMotorChannel, 0, 0);
     rotController.enableContinuousInput(-180.0, 180.0);
-
     resetAllEncoder();
     clearSticklyFault();
     stopModule();
@@ -103,19 +102,13 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
-    if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed) {
+    if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinJoyStickValue) {
       stopModule();
     } else {
       var moduleState = optimizeOutputVoltage(desiredState, getRotation());
       driveMotor.setVoltage(moduleState[0]);
       turningMotor.setVoltage(moduleState[1]);
     }
-  }
-
-  // for one module test
-  public void setMotorPower(double driveSpd, double rotSpd) {
-    driveMotor.set(0.6 * driveSpd);
-    turningMotor.set(rotSpd);
   }
 
   @Override
