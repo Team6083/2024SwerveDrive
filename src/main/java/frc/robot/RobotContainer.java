@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.subsystems.Drivetain;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -31,16 +32,22 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(
       OperatorConstants.kDriverControllerPort);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  private final PowerDistribution pd = new PowerDistribution();
+
+  /**
+   * The container for the robot. Contains subsystems, OI devices, and commands.
+   */
   public RobotContainer() {
     // Configure the trigger bindings
 
     configureBindings();
     SmartDashboard.putNumber("xbox_leftX", driverController.getLeftX());
     SmartDashboard.putNumber("xbox_leftY", driverController.getLeftY());
+    SmartDashboard.putNumber("pd_voltage", pd.getVoltage());
 
     // oneModuleSub = new OneModuleSub();
-    // oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub, driverController));
+    // oneModuleSub.setDefaultCommand(new SwerveTest2ManualCmd(oneModuleSub,
+    // driverController));
 
   }
 
@@ -61,19 +68,18 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
 
-        drivetain = new Drivetain();
+    drivetain = new Drivetain();
 
-        drivetain.setDefaultCommand(
+    drivetain.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
         new RunCommand(
-            () ->
-               drivetain.drive(
-                    driverController.getLeftY(),
-                    driverController.getLeftX(),
-                    driverController.getRightX(),
-                    true),
-           drivetain));
+            () -> drivetain.drive(
+                5.0*driverController.getLeftY(),
+                5.0*driverController.getLeftX(),
+                5.0*driverController.getRightX(),
+                !driverController.getHID().getAButton()),
+            drivetain));
 
   }
 
