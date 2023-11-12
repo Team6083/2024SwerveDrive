@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.I2C.Port;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetainConstants;
 
@@ -42,10 +43,15 @@ public class Drivetain extends SubsystemBase {
     backLeftLocation = new Translation2d(-0.3, 0.3);
     backRightLocation = new Translation2d(-0.3, -0.3);
 
-    frontLeft = new SwerveModule(10, 11, 5);
-    frontRight = new SwerveModule(15, 14, 4);
-    backLeft = new SwerveModule(12, 13, 2);
-    backRight = new SwerveModule(17, 16, 3);
+    frontLeft = new SwerveModule(10, 11, 5, DrivetainConstants.kFrontLeftDriveMotorInverted);
+    frontRight = new SwerveModule(15, 14, 4, DrivetainConstants.kFrontRightDriveMotorInverted);
+    backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted);
+    backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted);
+
+    SmartDashboard.putData("frontLeft", frontLeft);
+    SmartDashboard.putData("frontRight", frontRight);
+    SmartDashboard.putData("backLeft", backLeft);
+    SmartDashboard.putData("backRight", backRight);
 
     gyro = new AHRS(Port.kMXP);
 
@@ -65,13 +71,8 @@ public class Drivetain extends SubsystemBase {
 
     // reset the gyro
     setGyroReset();
-    //set reverse of the motor
-    backLeft.setDriveMotorReverse();
-    backRight.setDriveMotorReverse();
-    backLeft.setTurningMotorReverse();
-    backRight.setTurningMotorReverse();
-    
-    //set the swerve speed equal 0
+
+    // set the swerve speed equal 0
     drive(0, 0, 0, false);
   }
 
@@ -88,7 +89,7 @@ public class Drivetain extends SubsystemBase {
    * @param fieldRelative Whether the provided x and y speeds are relative to the
    *                      field.
    * 
-   * using the wpi function to set the speed of the swerve
+   *                      using the wpi function to set the speed of the swerve
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     var swerveModuleStates = kinematics.toSwerveModuleStates(
@@ -96,10 +97,14 @@ public class Drivetain extends SubsystemBase {
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DrivetainConstants.kMaxSpeed);
-    frontLeft.setDesiredState(swerveModuleStates[0], 1);
-    frontRight.setDesiredState(swerveModuleStates[1], 1);
-    backLeft.setDesiredState(swerveModuleStates[2], -1);
-    backRight.setDesiredState(swerveModuleStates[3], -1);
+    frontLeft.setDesiredState(swerveModuleStates[0]);
+    frontRight.setDesiredState(swerveModuleStates[1]);
+    backLeft.setDesiredState(swerveModuleStates[2]);
+    backRight.setDesiredState(swerveModuleStates[3]);
+    SmartDashboard.putNumber("frontLeft_speed", swerveModuleStates[0].speedMetersPerSecond);
+    SmartDashboard.putNumber("frontRight_speed", swerveModuleStates[1].speedMetersPerSecond);
+    SmartDashboard.putNumber("backLeft_speed", swerveModuleStates[2].speedMetersPerSecond);
+    SmartDashboard.putNumber("backRight_speed", swerveModuleStates[3].speedMetersPerSecond);
   }
 
   /** Updates the field relative position of the robot. */
@@ -114,7 +119,7 @@ public class Drivetain extends SubsystemBase {
         });
   }
 
-  //by test the different xboxController mode
+  // by test the different xboxController mode
   public double PIDcontrolRot(double rightX, double rightY) {
     double angle = Math.atan2(rightY, rightX);
     double rotSpd = rotController.calculate(gyro.getRotation2d().getRadians(), angle);
@@ -125,5 +130,6 @@ public class Drivetain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     updateOdometry();
+    SmartDashboard.putNumber("gyro_heading", gyro.getRotation2d().getDegrees());
   }
 }
