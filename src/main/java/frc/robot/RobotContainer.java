@@ -6,9 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.SwerveTest2ManualCmd;
 import frc.robot.subsystems.Drivetain;
-import frc.robot.subsystems.OneModuleSub;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -28,7 +26,6 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   Drivetain drivetain;
-  OneModuleSub oneModuleSub;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController driverController = new CommandXboxController(
