@@ -35,7 +35,7 @@ public class RobotContainer {
 
   private final PowerDistribution pd = new PowerDistribution();
 
-  private boolean chooseJoy;
+  private boolean chooseJoy = true;
   private double[] chassisSpeeds = new double[3];
 
   /**
