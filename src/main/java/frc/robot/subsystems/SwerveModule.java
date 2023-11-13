@@ -43,9 +43,9 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder = driveMotor.getEncoder();
 
     driveMotor.setInverted(driveInverted);
-    turningMotor.setInverted(false);
+    turningMotor.setInverted(true);
 
-    rotController = new PIDController(driveMotorChannel, 0, 0);
+    rotController = new PIDController(ModuleConstants.kPRotController, 0, 0);
     rotController.enableContinuousInput(-180.0, 180.0);
 
     resetAllEncoder();
@@ -95,6 +95,15 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double[] optimizeOutputVoltage(SwerveModuleState goalState, double currentTurningDegree) {
+    if(goalState.angle.getDegrees()-currentTurningDegree>85&&goalState.angle.getDegrees()-currentTurningDegree<=90){
+        currentTurningDegree += 5;
+    }else if(goalState.angle.getDegrees()-currentTurningDegree>90&&goalState.angle.getDegrees()-currentTurningDegree<=95){
+        currentTurningDegree -= 5;
+    }else if(goalState.angle.getDegrees()-currentTurningDegree<-85&&goalState.angle.getDegrees()-currentTurningDegree>=-90){
+        currentTurningDegree -= 5;
+    }else if(goalState.angle.getDegrees()-currentTurningDegree<-90&&goalState.angle.getDegrees()-currentTurningDegree>=-95){
+      currentTurningDegree += 5;
+    }
     goalState = SwerveModuleState.optimize(goalState, Rotation2d.fromDegrees(currentTurningDegree));
     double driveMotorVoltage = ModuleConstants.kDesireSpeedtoMotorVoltage * goalState.speedMetersPerSecond;
     double turningMotorVoltage = rotController.calculate(currentTurningDegree, goalState.angle.getDegrees());
