@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetainConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -51,6 +52,7 @@ public class SwerveModule extends SubsystemBase {
     resetAllEncoder();
     clearSticklyFault();
     stopModule();
+    SmartDashboard.putNumber("degree", 0);
   }
 
   public void resetAllEncoder() {
@@ -95,18 +97,23 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double[] optimizeOutputVoltage(SwerveModuleState goalState, double currentTurningDegree) {
-    if(goalState.angle.getDegrees()-currentTurningDegree>85&&goalState.angle.getDegrees()-currentTurningDegree<=90){
-        currentTurningDegree += 5;
-    }else if(goalState.angle.getDegrees()-currentTurningDegree>90&&goalState.angle.getDegrees()-currentTurningDegree<=95){
-        currentTurningDegree -= 5;
-    }else if(goalState.angle.getDegrees()-currentTurningDegree<-85&&goalState.angle.getDegrees()-currentTurningDegree>=-90){
-        currentTurningDegree -= 5;
-    }else if(goalState.angle.getDegrees()-currentTurningDegree<-90&&goalState.angle.getDegrees()-currentTurningDegree>=-95){
-      currentTurningDegree += 5;
+    SwerveModuleState optimizedState = SwerveModuleState.optimize(goalState,
+        Rotation2d.fromDegrees(currentTurningDegree));
+    if (goalState.angle.getDegrees() - currentTurningDegree > 75
+        && goalState.angle.getDegrees() - currentTurningDegree <= 90) {
+      currentTurningDegree += 15;
+    } else if (goalState.angle.getDegrees() - currentTurningDegree > 90
+        && goalState.angle.getDegrees() - currentTurningDegree <= 105) {
+      currentTurningDegree -= 15;
+    } else if (goalState.angle.getDegrees() - currentTurningDegree < -75
+        && goalState.angle.getDegrees() - currentTurningDegree >= -90) {
+      currentTurningDegree -= 15;
+    } else if (goalState.angle.getDegrees() - currentTurningDegree < -90
+        && goalState.angle.getDegrees() - currentTurningDegree >= -105) {
+      currentTurningDegree += 15;
     }
-    goalState = SwerveModuleState.optimize(goalState, Rotation2d.fromDegrees(currentTurningDegree));
-    double driveMotorVoltage = ModuleConstants.kDesireSpeedtoMotorVoltage * goalState.speedMetersPerSecond;
-    double turningMotorVoltage = rotController.calculate(currentTurningDegree, goalState.angle.getDegrees());
+    double driveMotorVoltage = ModuleConstants.kDesireSpeedtoMotorVoltage * optimizedState.speedMetersPerSecond;
+    double turningMotorVoltage = rotController.calculate(currentTurningDegree, optimizedState.angle.getDegrees());
     double[] moduleState = { driveMotorVoltage, turningMotorVoltage };
     return moduleState;
   }
