@@ -101,16 +101,16 @@ public class SwerveModule extends SubsystemBase {
         Rotation2d.fromDegrees(currentTurningDegree));
     if (goalState.angle.getDegrees() - currentTurningDegree > 75
         && goalState.angle.getDegrees() - currentTurningDegree <= 90) {
-      currentTurningDegree += 15;
+      currentTurningDegree += 10;
     } else if (goalState.angle.getDegrees() - currentTurningDegree > 90
         && goalState.angle.getDegrees() - currentTurningDegree <= 105) {
-      currentTurningDegree -= 15;
+      currentTurningDegree -= 10;
     } else if (goalState.angle.getDegrees() - currentTurningDegree < -75
         && goalState.angle.getDegrees() - currentTurningDegree >= -90) {
-      currentTurningDegree -= 15;
+      currentTurningDegree -= 10;
     } else if (goalState.angle.getDegrees() - currentTurningDegree < -90
         && goalState.angle.getDegrees() - currentTurningDegree >= -105) {
-      currentTurningDegree += 15;
+      currentTurningDegree += 10;
     }
     double driveMotorVoltage = ModuleConstants.kDesireSpeedtoMotorVoltage * optimizedState.speedMetersPerSecond;
     double turningMotorVoltage = rotController.calculate(currentTurningDegree, optimizedState.angle.getDegrees());
