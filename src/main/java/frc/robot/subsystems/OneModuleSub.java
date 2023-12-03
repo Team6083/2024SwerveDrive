@@ -17,7 +17,7 @@ public class OneModuleSub extends SubsystemBase {
 
   public OneModuleSub() {
     rotController.enableContinuousInput(-180, 180);
-    motor = new SwerveModule(10, 11, 5, true);
+    motor = new SwerveModule(10, 11, 5, true, "test");
   }
 
   public void drive(double rightX, double rightY, double speed) {

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivetainConstants;
+import frc.robot.Constants.ModuleConstants;
 
 public class Drivetain extends SubsystemBase {
   /** Creates a new Drivetain. */
@@ -43,15 +44,13 @@ public class Drivetain extends SubsystemBase {
     backLeftLocation = new Translation2d(-0.3, 0.3);
     backRightLocation = new Translation2d(-0.3, -0.3);
 
-    frontLeft = new SwerveModule(10, 11, 5, DrivetainConstants.kFrontLeftDriveMotorInverted);
-    frontRight = new SwerveModule(15, 14, 4, DrivetainConstants.kFrontRightDriveMotorInverted);
-    backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted);
-    backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted);
+    frontLeft = new SwerveModule(10, 11, 5, DrivetainConstants.kFrontLeftDriveMotorInverted, "FL");
+    frontRight = new SwerveModule(15, 14, 4, DrivetainConstants.kFrontRightDriveMotorInverted, "FR");
+    backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted, "BL");
+    backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted, "BR");
 
-    SmartDashboard.putData("frontLeft", frontLeft);
-    SmartDashboard.putData("frontRight", frontRight);
-    SmartDashboard.putData("backLeft", backLeft);
-    SmartDashboard.putData("backRight", backRight);
+    SmartDashboard.putNumber("MaxTurningVoltage", ModuleConstants.kMaxModuleTuringVoltage);
+    SmartDashboard.putNumber("kD", ModuleConstants.kDRotController);
 
     gyro = new AHRS(Port.kMXP);
 
@@ -97,10 +96,12 @@ public class Drivetain extends SubsystemBase {
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation2d())
             : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DrivetainConstants.kMaxSpeed);
+
     frontLeft.setDesiredState(swerveModuleStates[0]);
     frontRight.setDesiredState(swerveModuleStates[1]);
     backLeft.setDesiredState(swerveModuleStates[2]);
     backRight.setDesiredState(swerveModuleStates[3]);
+
     SmartDashboard.putNumber("frontLeft_speed", swerveModuleStates[0].speedMetersPerSecond);
     SmartDashboard.putNumber("frontRight_speed", swerveModuleStates[1].speedMetersPerSecond);
     SmartDashboard.putNumber("backLeft_speed", swerveModuleStates[2].speedMetersPerSecond);
@@ -117,7 +118,12 @@ public class Drivetain extends SubsystemBase {
             backLeft.getPosition(),
             backRight.getPosition()
         });
-        
+
+    SmartDashboard.putNumber("gyro_heading", gyro.getRotation2d().getDegrees());
+
+    ModuleConstants.kMaxModuleTuringVoltage = SmartDashboard.getNumber("MaxTurningVoltage",
+        ModuleConstants.kMaxModuleTuringVoltage);
+    ModuleConstants.kDRotController = SmartDashboard.getNumber("kD", ModuleConstants.kDRotController);
   }
 
   // by test the different xboxController mode
@@ -131,6 +137,5 @@ public class Drivetain extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     updateOdometry();
-    SmartDashboard.putNumber("gyro_heading", gyro.getRotation2d().getDegrees());
   }
 }

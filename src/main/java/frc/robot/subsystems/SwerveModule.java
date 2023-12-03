@@ -31,9 +31,13 @@ public class SwerveModule extends SubsystemBase {
 
   private final PIDController rotController;
 
+  private final String name;
+
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
-      int turningEncoderChannelA, boolean driveInverted) {
+      int turningEncoderChannelA, boolean driveInverted, String name) {
+
+    this.name = name;
 
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -46,7 +50,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setInverted(driveInverted);
     turningMotor.setInverted(true);
 
-    rotController = new PIDController(ModuleConstants.kPRotController, 0, 0);
+    rotController = new PIDController(ModuleConstants.kPRotController, 0, ModuleConstants.kDRotController);
     rotController.enableContinuousInput(-180.0, 180.0);
 
     resetAllEncoder();
@@ -99,19 +103,6 @@ public class SwerveModule extends SubsystemBase {
   public double[] optimizeOutputVoltage(SwerveModuleState goalState, double currentTurningDegree) {
     SwerveModuleState optimizedState = SwerveModuleState.optimize(goalState,
         Rotation2d.fromDegrees(currentTurningDegree));
-    if (goalState.angle.getDegrees() - currentTurningDegree > 75
-        && goalState.angle.getDegrees() - currentTurningDegree <= 90) {
-      currentTurningDegree += 10;
-    } else if (goalState.angle.getDegrees() - currentTurningDegree > 90
-        && goalState.angle.getDegrees() - currentTurningDegree <= 105) {
-      currentTurningDegree -= 10;
-    } else if (goalState.angle.getDegrees() - currentTurningDegree < -75
-        && goalState.angle.getDegrees() - currentTurningDegree >= -90) {
-      currentTurningDegree -= 10;
-    } else if (goalState.angle.getDegrees() - currentTurningDegree < -90
-        && goalState.angle.getDegrees() - currentTurningDegree >= -105) {
-      currentTurningDegree += 10;
-    }
     double driveMotorVoltage = ModuleConstants.kDesireSpeedtoMotorVoltage * optimizedState.speedMetersPerSecond;
     double turningMotorVoltage = rotController.calculate(currentTurningDegree, optimizedState.angle.getDegrees());
     double[] moduleState = { driveMotorVoltage, turningMotorVoltage };
@@ -121,10 +112,13 @@ public class SwerveModule extends SubsystemBase {
   public void setDesiredState(SwerveModuleState desiredState) {
     if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed) {
       stopModule();
+      SmartDashboard.putNumber(name+"_turningMotorVoltage", 0.0);
     } else {
       var moduleState = optimizeOutputVoltage(desiredState, getRotation());
       driveMotor.setVoltage(moduleState[0]);
       turningMotor.setVoltage(moduleState[1]);
+
+      SmartDashboard.putNumber(name+"_turningMotorVoltage", moduleState[2]);
     }
   }
 
