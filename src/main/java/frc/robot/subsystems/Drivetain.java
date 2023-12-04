@@ -44,10 +44,10 @@ public class Drivetain extends SubsystemBase {
     backLeftLocation = new Translation2d(-0.3, 0.3);
     backRightLocation = new Translation2d(-0.3, -0.3);
 
-    frontLeft = new SwerveModule(10, 11, 5, DrivetainConstants.kFrontLeftDriveMotorInverted, "FL");
-    frontRight = new SwerveModule(15, 14, 4, DrivetainConstants.kFrontRightDriveMotorInverted, "FR");
-    backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted, "BL");
-    backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted, "BR");
+    frontLeft = new SwerveModule(10, 11, 5, DrivetainConstants.kFrontLeftDriveMotorInverted);
+    frontRight = new SwerveModule(15, 14, 4, DrivetainConstants.kFrontRightDriveMotorInverted);
+    backLeft = new SwerveModule(12, 13, 2, DrivetainConstants.kBackLeftDriveMotorInverted);
+    backRight = new SwerveModule(17, 16, 3, DrivetainConstants.kBackRightDriveMotorInverted);
 
     SmartDashboard.putNumber("MaxTurningVoltage", ModuleConstants.kMaxModuleTuringVoltage);
     SmartDashboard.putNumber("kD", ModuleConstants.kDRotController);
@@ -120,10 +120,9 @@ public class Drivetain extends SubsystemBase {
         });
 
     SmartDashboard.putNumber("gyro_heading", gyro.getRotation2d().getDegrees());
+    // ModuleConstants.kDRotController = SmartDashboard.getNumber("kD", ModuleConstants.kDRotController);
 
-    ModuleConstants.kMaxModuleTuringVoltage = SmartDashboard.getNumber("MaxTurningVoltage",
-        ModuleConstants.kMaxModuleTuringVoltage);
-    ModuleConstants.kDRotController = SmartDashboard.getNumber("kD", ModuleConstants.kDRotController);
+    
   }
 
   // by test the different xboxController mode

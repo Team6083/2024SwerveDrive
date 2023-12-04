@@ -31,13 +31,11 @@ public class SwerveModule extends SubsystemBase {
 
   private final PIDController rotController;
 
-  private final String name;
 
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
-      int turningEncoderChannelA, boolean driveInverted, String name) {
+      int turningEncoderChannelA, boolean driveInverted) {
 
-    this.name = name;
 
     driveMotor = new CANSparkMax(driveMotorChannel, MotorType.kBrushless);
     turningMotor = new CANSparkMax(turningMotorChannel, MotorType.kBrushless);
@@ -112,13 +110,11 @@ public class SwerveModule extends SubsystemBase {
   public void setDesiredState(SwerveModuleState desiredState) {
     if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed) {
       stopModule();
-      SmartDashboard.putNumber(name+"_turningMotorVoltage", 0.0);
     } else {
       var moduleState = optimizeOutputVoltage(desiredState, getRotation());
       driveMotor.setVoltage(moduleState[0]);
       turningMotor.setVoltage(moduleState[1]);
 
-      SmartDashboard.putNumber(name+"_turningMotorVoltage", moduleState[2]);
     }
   }
 

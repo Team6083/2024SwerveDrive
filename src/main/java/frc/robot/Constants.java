@@ -37,17 +37,17 @@ public final class Constants {
 
     public static final double kWheelDiameterMeters = 0.15;
 
-    public static final double kMaxModuleDriveVoltage = 12.0*DrivetainConstants.kMaxSpeed/5.0;
+    public static final double kMaxModuleDriveVoltage = 10.0;
 
     public static final double kDesireSpeedtoMotorVoltage = kMaxModuleDriveVoltage / DrivetainConstants.kMaxSpeed;
 
-    public static double kMaxModuleTuringVoltage = 10.0;
+    public static final double kMaxModuleTuringVoltage = 2.0;
 
-    public static final double kMaxSpeedTurningDegree = 90.0;
+    public static final double kMaxSpeedTurningDegree = 180.0;
 
-    public static double kPRotController =  kMaxModuleTuringVoltage/kMaxSpeedTurningDegree;
+    public static final double kPRotController =  kMaxModuleTuringVoltage/kMaxSpeedTurningDegree;
 
-    public static double kDRotController = 0.07;
+    public static final double kDRotController = 0.0005;
   }
 
 }
