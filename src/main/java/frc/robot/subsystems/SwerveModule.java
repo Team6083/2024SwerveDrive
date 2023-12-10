@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -31,7 +32,6 @@ public class SwerveModule extends SubsystemBase {
 
   private final PIDController rotController;
 
-
   public SwerveModule(int driveMotorChannel,
       int turningMotorChannel,
       int turningEncoderChannelA, boolean driveInverted) {
@@ -51,20 +51,21 @@ public class SwerveModule extends SubsystemBase {
     rotController = new PIDController(ModuleConstants.kPRotController, 0, ModuleConstants.kDRotController);
     rotController.enableContinuousInput(-180.0, 180.0);
 
-    resetAllEncoder();
-    clearSticklyFault();
-    stopModule();
+    configDriveMotor();
+    configTurningMotor();
     SmartDashboard.putNumber("degree", 0);
   }
 
-  public void resetAllEncoder() {
+  public void configDriveMotor() {
+    driveMotor.clearFaults();
+    driveMotor.enableVoltageCompensation(ModuleConstants.kMaxModuleDriveVoltage);
     driveEncoder.setPosition(0);
   }
 
-  public void clearSticklyFault() {
-    driveMotor.clearFaults();
+  public void configTurningMotor(){
     turningMotor.clearFaults();
   }
+
 
   public void stopModule() {
     driveMotor.set(0);

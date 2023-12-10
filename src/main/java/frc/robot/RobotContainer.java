@@ -6,9 +6,10 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.SwerveTest2ManualCmd;
+import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.Drivetain;
 import frc.robot.subsystems.OneModuleSub;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,7 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
-  Drivetain drivetain;
+  Drivetain drivetain = new Drivetain();;
   OneModuleSub oneModuleSub;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -70,20 +71,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-
-    drivetain = new Drivetain();
-
-    drivetain.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> drivetain.drive(
-                5.0*driverController.getLeftY(),
-                5.0*driverController.getLeftX(),
-                5.0*driverController.getRightX(),
-                !driverController.getHID().getAButton()),
-            drivetain));
-
+    drivetain.setDefaultCommand(new SwerveJoystickCmd(drivetain ,driverController));
   }
 
   /**
