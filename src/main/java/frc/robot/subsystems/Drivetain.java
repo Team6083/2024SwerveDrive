@@ -72,7 +72,6 @@ public class Drivetain extends SubsystemBase {
     setGyroReset();
 
     // set the swerve speed equal 0
-    drive(0, 0, 0, false);
   }
 
   public void setGyroReset() {
