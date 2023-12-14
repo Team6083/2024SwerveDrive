@@ -68,6 +68,8 @@ public class Drivetain extends SubsystemBase {
             backRight.getPosition()
         });
 
+    
+
     // reset the gyro
     setGyroReset();
 
@@ -105,6 +107,13 @@ public class Drivetain extends SubsystemBase {
     SmartDashboard.putNumber("frontRight_speed", swerveModuleStates[1].speedMetersPerSecond);
     SmartDashboard.putNumber("backLeft_speed", swerveModuleStates[2].speedMetersPerSecond);
     SmartDashboard.putNumber("backRight_speed", swerveModuleStates[3].speedMetersPerSecond);
+  }
+
+  public void testDrive(double driveSpd, double rotSpd){
+    // frontLeft.setMotorPower(driveSpd, rotSpd);
+    // frontRight.setMotorPower(driveSpd, rotSpd);
+    // backLeft.setMotorPower(driveSpd, rotSpd);
+    backRight.setMotorPower(driveSpd, rotSpd);
   }
 
   /** Updates the field relative position of the robot. */

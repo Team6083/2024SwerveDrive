@@ -33,10 +33,11 @@ public class SwerveJoystickCmd extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    xSpeed = xLimiter.calculate(main.getLeftX()) * drivetainMaxSpeed;
-    ySpeed = yLimiter.calculate(main.getLeftY()) * drivetainMaxSpeed;
-    rotSpeed = rotLimiter.calculate(main.getRightX()) * drivetainMaxSpeed;
-    drivetain.drive(xSpeed, ySpeed, rotSpeed, !main.getHID().getAButton());
+    // xSpeed = xLimiter.calculate(main.getLeftX()) * drivetainMaxSpeed;
+    // ySpeed = yLimiter.calculate(main.getLeftY()) * drivetainMaxSpeed;
+    // rotSpeed = rotLimiter.calculate(main.getRightX()) * drivetainMaxSpeed;
+    // drivetain.drive(xSpeed, ySpeed, rotSpeed, !main.getHID().getAButton());
+    drivetain.testDrive(main.getLeftY(), main.getLeftX());
   }
 
   // Called once the command ends or is interrupted.
