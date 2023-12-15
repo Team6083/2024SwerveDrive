@@ -26,9 +26,9 @@ public final class Constants {
     public static final double kMinSpeed = 0.25;
     public static final double kMaxAngularSpeed = 2.5 * Math.PI; // 1/2 rotation per second
 
-    public static final double xLimiterRateLimit = 1.5;
-    public static final double yLimiterRateLimit = 1.5;
-    public static final double rotLimiterRateLimit = 1.5;
+    public static final double xLimiterRateLimit = 3.0;
+    public static final double yLimiterRateLimit = 3.0;
+    public static final double rotLimiterRateLimit = 3.0;
 
     public static final boolean kFrontLeftDriveMotorInverted = true;
     public static final boolean kFrontRightDriveMotorInverted = false;
@@ -41,7 +41,7 @@ public final class Constants {
 
     public static final double kWheelDiameterMeters = 0.15;
 
-    public static final double kMaxModuleDriveVoltage = 12.0;
+    public static final double kMaxModuleDriveVoltage = 7.5;
 
     public static final double kDesireSpeedtoMotorVoltage = kMaxModuleDriveVoltage / DrivetainConstants.kMaxSpeed;
 

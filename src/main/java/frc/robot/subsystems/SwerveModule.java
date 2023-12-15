@@ -9,6 +9,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.FaultID;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -48,11 +49,14 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setInverted(driveInverted);
     turningMotor.setInverted(true);
 
+    driveMotor.setSmartCurrentLimit(100);
+
     rotController = new PIDController(ModuleConstants.kPRotController, 0, ModuleConstants.kDRotController);
     rotController.enableContinuousInput(-180.0, 180.0);
 
     configDriveMotor();
     configTurningMotor();
+    driveMotor.burnFlash();
     SmartDashboard.putNumber("degree", 0);
   }
 
@@ -115,19 +119,22 @@ public class SwerveModule extends SubsystemBase {
       var moduleState = optimizeOutputVoltage(desiredState, getRotation());
       driveMotor.setVoltage(moduleState[0]);
       turningMotor.setVoltage(moduleState[1]);
-
+      SmartDashboard.putNumber(turningEncoder+"_voltage", moduleState[0]);
     }
   }
 
   // for one module test
   public void setMotorPower(double driveSpd, double rotSpd) {
-    driveMotor.set(0.6 * driveSpd);
+    driveMotor.set(driveSpd);
     turningMotor.set(rotSpd);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber(turningEncoder+"_current", driveMotor.getOutputCurrent());
+    SmartDashboard.putBoolean(turningEncoder+"_overcurrent", 
+    driveMotor.getFault(FaultID.kOvercurrent));
   }
 
 }

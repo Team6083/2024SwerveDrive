@@ -22,18 +22,6 @@
       "/SmartDashboard/backRight": "Subsystem",
       "/SmartDashboard/frontLeft": "Subsystem",
       "/SmartDashboard/frontRight": "Subsystem"
-    },
-    "windows": {
-      "/SmartDashboard/backLeft": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/backRight": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables Settings": {
@@ -84,7 +72,10 @@
             }
           ]
         }
-      ]
+      ],
+      "window": {
+        "visible": false
+      }
     },
     "Plot <1>": {
       "plots": [
@@ -98,7 +89,84 @@
                 0.6901960968971252,
                 1.0
               ],
-              "id": "NT:/SmartDashboard/kD"
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@13b46c3_current"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@1d9bc04_current"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@364841_current"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@9e725a_current"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <2>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "max": 12.0
+            }
+          ],
+          "height": 332,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@6044d7_voltage"
+            },
+            {
+              "color": [
+                0.8666667342185974,
+                0.5176470875740051,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@c4711c_voltage"
+            },
+            {
+              "color": [
+                0.3333333432674408,
+                0.658823549747467,
+                0.4078431725502014,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@364841_voltage"
+            },
+            {
+              "color": [
+                0.7686275243759155,
+                0.30588236451148987,
+                0.32156863808631897,
+                1.0
+              ],
+              "id": "NT:/SmartDashboard/com.ctre.phoenix.sensors.CANCoder@1717824_voltage"
             }
           ]
         }
