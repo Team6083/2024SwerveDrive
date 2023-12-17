@@ -68,12 +68,8 @@ public class Drivetain extends SubsystemBase {
             backRight.getPosition()
         });
 
-    
-
     // reset the gyro
-    setGyroReset();
-
-    // set the swerve speed equal 0
+      setGyroReset();
   }
 
   public void setGyroReset() {

@@ -49,7 +49,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setInverted(driveInverted);
     turningMotor.setInverted(true);
 
-    driveMotor.setSmartCurrentLimit(100);
+    driveMotor.setSmartCurrentLimit(110);
 
     rotController = new PIDController(ModuleConstants.kPRotController, 0, ModuleConstants.kDRotController);
     rotController.enableContinuousInput(-180.0, 180.0);
@@ -112,11 +112,26 @@ public class SwerveModule extends SubsystemBase {
     return moduleState;
   }
 
+  public double checkOverVoltage(double currentVoltage, double goalVoltage){
+    double error = goalVoltage-currentVoltage;
+    if(Math.abs(goalVoltage)<DrivetainConstants.kMinSpeed*ModuleConstants.kDesireSpeedtoMotorVoltage){
+      return goalVoltage;
+    }
+    if(Math.abs(error)>ModuleConstants.kLimitModuleDriveVoltage){
+      error *= ModuleConstants.kLimitModuleDriveVoltage/ModuleConstants.kMaxModuleDriveVoltage;
+      return currentVoltage+error;
+    }else{
+      return goalVoltage;
+    }
+    
+  }
+
   public void setDesiredState(SwerveModuleState desiredState) {
     if (Math.abs(desiredState.speedMetersPerSecond) < DrivetainConstants.kMinSpeed) {
       stopModule();
     } else {
       var moduleState = optimizeOutputVoltage(desiredState, getRotation());
+      moduleState[0] = checkOverVoltage(driveMotor.getOutputCurrent(), moduleState[0]);
       driveMotor.setVoltage(moduleState[0]);
       turningMotor.setVoltage(moduleState[1]);
       SmartDashboard.putNumber(turningEncoder+"_voltage", moduleState[0]);

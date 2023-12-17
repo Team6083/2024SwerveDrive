@@ -41,7 +41,8 @@ public final class Constants {
 
     public static final double kWheelDiameterMeters = 0.15;
 
-    public static final double kMaxModuleDriveVoltage = 7.5;
+    public static final double kLimitModuleDriveVoltage = 7.0;
+    public static final double kMaxModuleDriveVoltage = 7.2;
 
     public static final double kDesireSpeedtoMotorVoltage = kMaxModuleDriveVoltage / DrivetainConstants.kMaxSpeed;
 
