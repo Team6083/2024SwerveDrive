@@ -7,9 +7,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.FaultID;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -49,7 +50,16 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setInverted(driveInverted);
     turningMotor.setInverted(true);
 
-    driveMotor.setSmartCurrentLimit(110);
+    driveMotor.setSmartCurrentLimit(10, 80);
+    driveMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 40);
+    driveMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 150);
+    driveMotor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 150);
+    driveMotor.setClosedLoopRampRate(ModuleConstants.kClosedLoopRampRate);
+    turningMotor.setSmartCurrentLimit(20);
+    driveMotor.setClosedLoopRampRate(0.25);
+
+    driveMotor.setIdleMode(IdleMode.kBrake);
+    turningMotor.setIdleMode(IdleMode.kBrake);
 
     rotController = new PIDController(ModuleConstants.kPRotController, 0, ModuleConstants.kDRotController);
     rotController.enableContinuousInput(-180.0, 180.0);
@@ -57,6 +67,7 @@ public class SwerveModule extends SubsystemBase {
     configDriveMotor();
     configTurningMotor();
     driveMotor.burnFlash();
+    turningMotor.burnFlash();
     SmartDashboard.putNumber("degree", 0);
   }
 
@@ -131,7 +142,7 @@ public class SwerveModule extends SubsystemBase {
       stopModule();
     } else {
       var moduleState = optimizeOutputVoltage(desiredState, getRotation());
-      moduleState[0] = checkOverVoltage(driveMotor.getOutputCurrent(), moduleState[0]);
+      // moduleState[0] = checkOverVoltage(driveMotor.getOutputCurrent(), moduleState[0]);
       driveMotor.setVoltage(moduleState[0]);
       turningMotor.setVoltage(moduleState[1]);
       SmartDashboard.putNumber(turningEncoder+"_voltage", moduleState[0]);
